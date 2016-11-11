@@ -1,0 +1,100 @@
+[{
+	"Path": "Client01",
+	"Client": "Client01",
+	"Site": null,
+	"SpaceUsageType": null,
+	"PodBuildOutType": null,
+	"PodUsageType": null,
+	"PodName": null,
+	"SqFt": 0.0
+}, {
+	"Path": "Client01/Site_01/RESERVED",
+	"Client": "Client01",
+	"Site": "Site_01",
+	"SpaceUsageType": "RESERVED",
+	"PodBuildOutType": null,
+	"PodUsageType": null,
+	"PodName": null,
+	"SqFt": 800.0
+}, {
+	"Path": "Client01/Site_01/CONTRACTED/FREE",
+	"Client": "Client01",
+	"Site": "Site_01",
+	"SpaceUsageType": "CONTRACTED",
+	"PodBuildOutType": "FREE",
+	"PodUsageType": null,
+	"PodName": null,
+	"SqFt": 850.0
+}, {
+	"Path": "Client01/Site_01/CONTRACTED/BUILT/PROD/Pod1",
+	"Client": "Client01",
+	"Site": "Site_01",
+	"SpaceUsageType": "CONTRACTED",
+	"PodBuildOutType": "BUILT",
+	"PodUsageType": "PROD",
+	"PodName": "Pod1",
+	"SqFt": 150.0
+}, {
+	"Path": "Client01/Site_01/CONTRACTED/BUILT/PROD/Pod2",
+	"Client": "Client01",
+	"Site": "Site_01",
+	"SpaceUsageType": "CONTRACTED",
+	"PodBuildOutType": "BUILT",
+	"PodUsageType": "PROD",
+	"PodName": "Pod2",
+	"SqFt": 100.0
+}, {
+	"Path": "Client01/Site_01/CONTRACTED/BUILT/DR/Pod3",
+	"Client": "Client01",
+	"Site": "Site_01",
+	"SpaceUsageType": "CONTRACTED",
+	"PodBuildOutType": "BUILT",
+	"PodUsageType": "DR",
+	"PodName": "Pod3",
+	"SqFt": 200.0
+}, {
+	"Path": "Client01/Site_11/RESERVED",
+	"Client": "Client01",
+	"Site": "Site_11",
+	"SpaceUsageType": "RESERVED",
+	"PodBuildOutType": null,
+	"PodUsageType": null,
+	"PodName": null,
+	"SqFt": 800.0
+}, {
+	"Path": "Client01/Site_11/CONTRACTED/FREE",
+	"Client": "Client01",
+	"Site": "Site_11",
+	"SpaceUsageType": "CONTRACTED",
+	"PodBuildOutType": "FREE",
+	"PodUsageType": null,
+	"PodName": null,
+	"SqFt": 850.0
+}, {
+	"Path": "Client01/Site_11/CONTRACTED/BUILT/PROD/Pod1",
+	"Client": "Client01",
+	"Site": "Site_11",
+	"SpaceUsageType": "CONTRACTED",
+	"PodBuildOutType": "BUILT",
+	"PodUsageType": "PROD",
+	"PodName": "Pod1",
+	"SqFt": 150.0
+}, {
+	"Path": "Client01/Site_11/CONTRACTED/BUILT/PROD/Pod2",
+	"Client": "Client01",
+	"Site": "Site_11",
+	"SpaceUsageType": "CONTRACTED",
+	"PodBuildOutType": "BUILT",
+	"PodUsageType": "PROD",
+	"PodName": "Pod2",
+	"SqFt": 100.0
+}, {
+	"Path": "Client01/Site_11/CONTRACTED/BUILT/DR/Pod3",
+	"Client": "Client01",
+	"Site": "Site_11",
+	"SpaceUsageType": "CONTRACTED",
+	"PodBuildOutType": "BUILT",
+	"PodUsageType": "DR",
+	"PodName": "Pod3",
+	"SqFt": 200.0
+}]

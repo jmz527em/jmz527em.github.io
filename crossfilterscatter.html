@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>"D3 Chart Builders"</title>
+    <script type="text/javascript" language="javascript" src="d3.v4.js"></script>
+    <script type="text/javascript" language="javascript" src="EMD3.js"></script>
+    <script type="text/javascript" language="javascript" src="jquery-2.2.4.js"></script>
+    <script type="text/javascript" language="javascript" src="bootstrap.js"></script>
+    <script type="text/javascript" language="javascript" src="jquery-ui-1.12.js"></script>
+    <script type="text/javascript" language="javascript" src="papaparse.js"></script>
+    <link rel="stylesheet" href="./Styles/jquery-ui.css" type="text/css" media="all" />
+    <link href='./Styles/bootstrap.css' rel='stylesheet' />
+    <link href='./Styles/bootstrap-theme.css' rel='stylesheet' />
+
+    <style>
+
+        a, button, code, div, img, input, label, li, p, pre, select, span, svg, table, td, textarea, th, ul {
+            -webkit-border-radius: 0!important;
+            -moz-border-radius: 0!important;
+            border-radius: 0!important;
+        }
+
+        ul, menu, dir {
+            display: block;
+            list-style-type: disc;
+            -webkit-margin-before: 1em;
+            -webkit-margin-after: 1em;
+            -webkit-margin-start: 0px;
+            -webkit-margin-end: 0px;
+            -webkit-padding-start: 40px;
+        }
+
+        .page-container {
+            margin:0;
+            padding:0;
+            margin-top:50px;
+            display:block;
+        }
+        .sideBarWrapper{
+            /*position: relative;
+            float:left;
+            min-height: 100%;*/
+            position:fixed;
+            left: 0;
+            top: 30px;
+            bottom: 0;
+            width: 50px;
+            margin:0;
+            padding:0;
+            margin-top:50px;
+        }
+        #navBar {
+            background-color: #a8a599;
+            max-height: none!important;
+            display:block!important;
+            height:auto!important;
+            overflow:visible!important;
+            width:50px;
+            
+        }
+        .sideBar
+        {
+            width:45px;
+            list-style:none;
+            margin:0;
+            padding:0;
+        }
+
+        .navElement {
+            width:50px;
+            height:50px;
+            border:dashed;
+            display:block;
+            text-align: -webkit-match-parent;
+        }
+        #content {
+            background: lightgray;
+            position: relative;
+            min-height: 1000px;
+            position:fixed;
+            left: 50px;
+            top: 50px;
+            bottom: 0;
+            width: 100%;
+            margin:0;
+        } 
+        
+        .lineGraph-lg
+        {
+            background-color:azure;
+            width:100%;
+            height:800px; /*need media queries for this*/
+            float:left;
+        } 
+
+        .line {
+          fill: none;
+          stroke: steelblue;
+          stroke-width: 1.5px;
+        }
+
+        .newline {
+          fill: none;
+          stroke-width: 1.5px;
+          stroke-opacity:0.75;
+        }
+
+        .axis path,
+        .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
+
+        .axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+        .y.axis line {
+	        stroke: #ccc;
+        }
+        .y.axis path {
+	        display: none;
+        }
+
+        #slideout {
+          position:relative;
+          z-index:1000;
+          left: 0;
+          z-index:1000;
+          -webkit-transition-duration: 0.3s;
+          -moz-transition-duration: 0.3s;
+          -o-transition-duration: 0.3s;
+          transition-duration: 0.3s;
+        }
+        #slideout_inner {
+          position:relative;
+          left: -250px;
+          -webkit-transition-duration: 1s;
+          -moz-transition-duration: 1s;
+          -o-transition-duration: 1s;
+          transition-duration: 1s;
+        }
+        #slideout:hover {
+          left: 250px;
+        }
+        #slideout:hover #slideout_inner {
+          left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="width:100%;height:50px;background-color:black">Header</div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="sideBarWrapper">
+                <div id="navbar">
+                    <ul class="sideBar">
+                        <li class="navElement">
+                            <div id="slideout">
+                                <img src="testbutton.png" style="vertical-align:central" alt="ss" />
+                                <div id="slideout_inner">
+                                    <!--[form code goes here]-->
+                                    <textarea>Hey hey!</textarea>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="navElement"></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <div id="content">
+                <div class="container-fluid">
+                    <div id="dvImportSegments" class="fileupload ">
+                        <fieldset>
+                            <legend>Upload your CSV File</legend>
+                            <input type="file" name="File Upload" id="txtFileUpload" accept=".csv" />
+                        </fieldset>
+                    </div>
+                    <div class="row">
+                        <div id="chartDiv" class="lineGraph-lg" style="background-color:lightslategray"></div>
+                    </div>
+                    <div class="row">
+                        <div id="chart_controls" style="height:50px;background-color:white">
+                            <div id="sliderContainer" style="width:300px">
+                                <div id="slider-range" style="width: 80%; margin-left:10%; margin-right:10%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        var lineData = [] //added to the library specifically for line smoothing.
+        document.getElementById('txtFileUpload').addEventListener('change', upload, false);
+        // Method that checks that the browser supports the HTML5 File API
+        
+        var a = 1;
+        
+        
+        
+        
+    });
+
+    function browserSupportFileUpload() {
+        var isCompatible = false;
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            isCompatible = true;
+        }
+        return isCompatible;
+    }
+
+    function upload(evt) {
+        if (!browserSupportFileUpload()) {
+            alert('The File APIs are not fully supported in this browser!');
+        } 
+        else {
+            $("#jsontotable").show();
+            var data = null;
+            var file = evt.target.files[0];
+            Papa.parse(file, {
+                header: true,
+                complete: function (results) {
+                    console.log("Papa's results: ",results);
+                    data = results.data;
+                    var emd = new EMD3();
+                    emd.makeSunburstChart("#chartDiv"); //alternatively allow to pass in data vs. load external data vs. ajax etc.
+
+                }
+            });
+        }
+    }
+
+    function add(a, b) {
+        return a + b;
+    }
+
+
+
+    
+</script>

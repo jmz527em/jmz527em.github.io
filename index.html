@@ -1,0 +1,779 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>"D3 Chart Builders"</title>
+    <script type="text/javascript" language="javascript" src="d3.min.js"></script>
+    <script type="text/javascript" language="javascript" src="jquery-2.2.4.js"></script>
+    <script type="text/javascript" language="javascript" src="bootstrap.js"></script>
+    <script type="text/javascript" language="javascript" src="sliders.js"></script>
+    <link href='./Styles/bootstrap.css' rel='stylesheet' />
+    <link href='./Styles/bootstrap-theme.css' rel='stylesheet' />
+
+    <style>
+
+        a, button, code, div, img, input, label, li, p, pre, select, span, svg, table, td, textarea, th, ul {
+            -webkit-border-radius: 0!important;
+            -moz-border-radius: 0!important;
+            border-radius: 0!important;
+        }
+
+        ul, menu, dir {
+            display: block;
+            list-style-type: disc;
+            -webkit-margin-before: 1em;
+            -webkit-margin-after: 1em;
+            -webkit-margin-start: 0px;
+            -webkit-margin-end: 0px;
+            -webkit-padding-start: 40px;
+        }
+
+        .page-container {
+            margin:0;
+            padding:0;
+            margin-top:50px;
+            display:block;
+        }
+        .sideBarWrapper{
+            /*position: relative;
+            float:left;
+            min-height: 100%;*/
+            position:fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            margin:0;
+            padding:0;
+            margin-top:50px;
+        }
+        #navBar {
+            background-color: #a8a599;
+            max-height: none!important;
+            display:block!important;
+            height:auto!important;
+            overflow:visible!important;
+            width:50px;
+            
+        }
+        .sideBar
+        {
+            width:45px;
+            list-style:none;
+            margin:0;
+            padding:0;
+        }
+
+        .navElement {
+            width:50px;
+            height:50px;
+            border:solid;
+            display:block;
+            text-align: -webkit-match-parent;
+        }
+        #content {
+            background: yellow;
+            position: relative;
+            min-height: 1000px;
+            position:fixed;
+            left: 50px;
+            top: 50px;
+            bottom: 0;
+            width: 100%;
+            margin:0;
+        } 
+        
+        .scatter
+        {
+            background-color:azure;
+            width:485px;
+            height:200px;
+            float:left;
+        } 
+
+        .donut
+        {
+            background-color:azure;
+            width:242px;
+            height:200px;
+            float:left;
+        } 
+
+        .axis path,
+        .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
+
+        .axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+        .y.axis line {
+	        stroke: #ccc;
+        }
+        .y.axis path {
+	        display: none;
+        }
+    </style>
+</head>
+<body>
+    <div style="width:100%;height:50px;background-color:green">Header</div>
+    <div class="container">
+        <div class="row">
+            <div class="sideBarWrapper">
+                <div id="navbar">
+                    <ul class="sideBar">
+                        <li class="navElement"></li>
+                        <li class="navElement"></li>
+                    </ul>
+                    <!--<div class="schedule-row" id="mon-row">
+                <div class="schedule-day col-xs-5">
+                    <p><span class="day"></span></p>
+                </div>
+            </div>-->
+                </div>
+            </div>
+
+
+            <div id="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="donut" id="chartDiv" style="background-color:azure"></div>
+                        <div class="scatter" id="scatterDiv"></div>
+                        <div class="donut" id="chartDiv2" style="background-color:azure"></div>
+                    </div>
+                    <div class="row">
+                        <div id="map" style="height:560px;background-color:red"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+    
+
+        var a = 1;
+        var emd = new EMD3();
+        var categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var values = [2, 2, 2, 20, 25, 29, 21, 12, 20, 12, 2, 2];
+        //emd.MakeSimpleHorBarChart(categories, values, "Some text", "aquamarine", "#chartDiv");
+        var data = [
+       {
+           "x-axis": "",
+           "High": 40,
+           "Medium": 40,
+           "Low": 40,
+       }
+         //{
+         //    "x-axis": "",
+         //    "RTU": 2,
+         //    "Interior Lights": 30,
+         //    "Exterior Lights": 271,
+         //    "Thermostats": 125,
+         //}
+        ];
+        var chartSetup = {
+            xAxisKey:"x-axis",
+            colors:["#02738B","#0092B1","#00A4C7"],
+            yaxisTickFormat:d3.format(".2f"),
+            percentageScale:false,
+            yAxisText:"ekWh/sf/yr",
+            metaData:[
+        {
+            category:"EUI",
+            units: "ekWh/sf/yr",
+        axisDomain:[0,120],
+        itemLegend:true,
+        "items":[{
+            name:"BranchEUI",
+            value:60,
+            color: "#222222",
+            type:"line"
+        },
+        {
+            name:"TargetEUI",
+            value:50,
+            color: "#24D936",
+            type:"circle"
+        },
+        {
+            name:"PortfolioEUI",
+            value:100,
+            color: "#FF932F",
+            type:"circle"
+        }]
+    },
+    ]
+    }
+        emd.loadGenericDonut("#chartDiv");
+        emd.MakeSimpleScatterPlot("", "#scatterDiv", "");
+        emd.MakeGradientStackedBar(data, "#chartDiv2", chartSetup);
+    });
+
+    function add(a, b) {
+        return a + b;
+    }
+
+    function EMD3() {
+        this.aDiv = "";
+    }
+
+    EMD3.prototype = {
+        constructor: EMD3,
+        MakeSimpleHorBarChart:function(categories, values, xAxisText, barcolor, divname)
+        {
+            console.log("Categories:", categories.length);
+            console.log("Values:", values);
+            var emdt = this;
+            var padding = 2;
+            var width = parseInt(d3.select(divname).style('width'), 10);
+            var height = parseInt(d3.select(divname).style('height'), 10);
+            var yaxPad = 50;
+            var xaxPad = 40;
+            var padTop = 40;
+            var padRight = 20;
+            var barHeight = ((height - xaxPad - padTop) / categories.length) - padding * 2;
+
+            var xScale = d3.scale.linear()
+                .domain([0, d3.max(values)])
+                .range([0, (width - yaxPad - padRight)]);
+
+            var yScale = d3.scale.linear()
+                .domain([0, categories.length])
+                .range([0, (height - xaxPad - padding - padTop)]);
+
+            var canvas = d3.select(divname)
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            canvas.append("text")
+                .attr("dy", (height - 3))
+                .attr("dx", (width / 2) * .9)
+                .attr("style", "font-family:Palatino")
+                .attr("style", "font-size:18px")
+                .text(function (d) { return xAxisText })
+
+            canvas.append("text")
+                .attr("dy", 50)
+                .attr("dx", width / 2)
+                .attr("style", "font-family:Palatino")
+                .attr("style", "font-size:18px")
+                .text(function (d) {
+                    var sum = values.reduce(emdt.add, 0);
+                    return "Annual Projected Cost Penalty: $" + sum;
+                })
+
+            var xAxis = d3.svg.axis()
+                .orient("bottom")
+                .scale(xScale)
+                .tickSize(2);
+
+            var yAxis = d3.svg.axis()
+                .orient("left")
+                .scale(yScale)
+                .tickSize(0)
+                .tickFormat(function (d, i) { return categories[i]; })
+                .tickValues(d3.range(categories.length));
+
+            var y_xis = canvas.append('g')
+                              .attr("transform", "translate(" + yaxPad + "," + padTop + ")")
+                              .attr('id', ('yaxis' + (Math.random() * 100).toString()))
+                              .call(yAxis);
+
+            var x_xis = canvas.append('g')
+                              .attr("transform", "translate(" + yaxPad + "," + (height - xaxPad - (padding * 2)) + ")")
+                              .attr('id', ('xaxis' + (Math.random() * 100).toString()))
+                              .call(xAxis);
+
+            var div = d3.select("body").append("div")
+                 .attr("class", "d3-tip")
+                 .style("opacity", 1e-6);
+            //would it make sense to pass in mouseover colors, functions, etc.?
+            var chart = canvas.append("g")
+                .attr("transform", "translate(" + yaxPad + "," + padTop + ")")
+                .attr("id", "bars")
+                .selectAll("rect")
+                .data(values)
+                .enter()
+                .append("rect")
+                .attr("height", barHeight)
+                .attr("x", 0)
+                .attr("opacity", 0.2)
+                .attr("y", function (d, i) { return (yScale(i) - barHeight / 2); })
+                .attr("width", 0)
+                .attr("color", "grey")
+                .on("mouseover", function (d) { //will "this" work as intended?
+                    d3.select(this)
+                        .attr("fill", "orangered")
+                        .attr("opacity", 1);
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                })
+                .on("mousemove", function (d, i) {
+                    //console.log(d)
+                    div.html(categories[i] + ": " + "$CAD " + values[i])
+                      .style("left", (d3.event.pageX + 25) + "px")
+                      .style("top", (d3.event.pageY - 20) + "px");
+                    //console.log(div);
+                })
+                .on("mouseout", function (d) {
+                    d3.select(this) //will "this" work as intended?
+                        .attr("fill", barcolor)
+                        .attr("opacity", 0.8);
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .transition()
+                    .delay(function (d, i) { return i * 100 })
+                    .duration(200)
+                    .attr("width", function (d, i) { return xScale(d); })
+                    .attr("fill", barcolor)
+                    .attr("opacity", 0.8);
+        },
+        MakeSimpleScatterPlot:function(jsondata,divname,chartSetupJson)
+        {
+            var margin = { top: 20, right: 20, bottom: 30, left: 40 },
+            width = parseInt(d3.select(divname).style("width"), 10) - margin.left - margin.right,
+            height = parseInt(d3.select(divname).style("height"), 10) - margin.top - margin.bottom;
+            console.log("Width:", width);
+            console.log("Height", height);
+            console.log("here!")
+            var x = d3.scale.linear()
+                .range([0, width]);
+
+            var y = d3.scale.linear()
+                .range([height, 0]);
+
+            var color = d3.scale.category10();
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
+
+            var svg = d3.select(divname).append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            console.log("SVG", svg)
+
+            d3.csv("data.csv", function (error, data) {
+                console.log("Here")
+                if (error) throw error;
+                console.log("Data?",data)
+                data.forEach(function (d) {
+                    console.log(d)
+                    d.sepalLength = +d.sepalLength;
+                    d.sepalWidth = +d.sepalWidth;
+                });
+
+                x.domain(d3.extent(data, function (d) { return d.sepalWidth; })).nice();
+                y.domain(d3.extent(data, function (d) { return d.sepalLength; })).nice();
+
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                  .append("text")
+                    .attr("class", "label")
+                    .attr("x", width)
+                    .attr("y", -6)
+                    .style("text-anchor", "end")
+                    .text("Sepal Width (cm)");
+
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                  .append("text")
+                    .attr("class", "label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Sepal Length (cm)")
+
+                svg.selectAll(".dot")
+                    .data(data)
+                  .enter().append("circle")
+                    .attr("class", "dot")
+                    .attr("r", 3.5)
+                    .attr("cx", function (d) { return x(d.sepalWidth); })
+                    .attr("cy", function (d) { return y(d.sepalLength); })
+                    .style("fill", function (d) { return color(d.species); })
+                    .style("opacity", 0.5)
+                    .style("stroke", function (d) { return color(d.species); })
+                    .style("stroke-width",'1.5');
+
+                var legend = svg.selectAll(".legend")
+                    .data(color.domain())
+                  .enter().append("g")
+                    .attr("class", "legend")
+                    .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+
+                legend.append("rect")
+                    .attr("x", width - 18)
+                    .attr("width", 18)
+                    .attr("height", 18)
+                    .style("fill", color)
+                    .style("opacity",0.5);
+
+                legend.append("text")
+                    .attr("x", width - 24)
+                    .attr("y", 9)
+                    .attr("dy", ".35em")
+                    .style("text-anchor", "end")
+                    .text(function (d) { return d; });
+
+            });
+        },
+        MakeGradientStackedBar:function(jsondata,divname,chartSetupJson)
+        {
+            //css styling, can be modified in case where text from axes do not fit
+            var margin = {
+                top: 20,
+                right: 20,
+                bottom: 40,
+                left: 100
+            },
+				width = parseInt(d3.select(divname).style("width"),10) - margin.left - margin.right,
+				height = parseInt(d3.select(divname).style("height"),10) - margin.top - margin.bottom,
+				that = this;
+            console.log("Width:", width);
+            console.log("Height", height);
+            var x = d3.scale.ordinal().rangeRoundBands([0, width], .3);
+            //the yscale is vastly affected by the type of data being displayed
+            var y = d3.scale.linear();
+            if (chartSetupJson.hasOwnProperty("metaData"))
+            {
+                if (chartSetupJson.metaData.length > 0)
+                {
+                    console.log(chartSetupJson.metaData[0].axisDomain)
+                    y.domain(chartSetupJson.metaData[0].axisDomain);
+                    console.log("Ydomain", y.domain())
+                }
+                else {
+                    //the domain is based upon the sum of the passed in jsondata
+                    if (!chartSetupJson.percentageScale) {
+                        var sum = 0;
+                        for (var key in jsondata[0]) {
+                            if (key == chartSetupJson.xAxisKey) continue;
+                            else sum += jsondata[0][key];
+                        }
+                        sum = sum * 1.1 //we apply 10% safety
+                        y.domain([0, Math.ceil(sum / 10) * 10]); //round to the nearest 10
+                    }
+                    else {
+                        y.domain([0, 1]); //as in zero to 100 percent
+                    }
+                }
+            }
+            y.rangeRound([height, 0]);
+            var xAxis = d3.svg.axis().scale(x).orient("bottom");
+            var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6).ticks(10).tickFormat(chartSetupJson.yaxisTickFormat);//interesting you can put a format inside
+            var svg = d3.select(divname)
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var colordomain = d3.keys(jsondata[0]).filter(function (key) {
+                return key !== chartSetupJson.xAxisKey; //can we pass something in to indicate what key goes on the x-axis?
+            });
+            var colorrange = this.processOrdinalColorRange(chartSetupJson.colors, colordomain.length); //this is the color range
+            var color = d3.scale.ordinal()
+                .domain(colordomain)
+                .range(colorrange);
+
+            //do we want to inject our own d3 function in here that sorts out the data accordingly?
+            jsondata.forEach(function (d) {
+                var y0 = 0;
+                d.rates = color.domain().map(function (name) {
+                    return {
+                        name: name,
+                        y0: y0,
+                        y1: y0 += +d[name],
+                        amount: d[name]
+                    };
+                });
+                console.log(d.rates);
+                console.log(y0)
+                if(chartSetupJson.percentageScale)
+                {
+                    d.rates.forEach(function (d) { 
+                        d.y0 /= y0; console.log(y0)//why? to turn into percentages
+                        d.y1 /= y0; //why? to turn into percentages
+                    });
+                }
+                
+            });
+
+            jsondata.sort(function (a, b) {
+                return b.rates[0].y1 - a.rates[0].y1;
+            });
+
+            x.domain(jsondata.map(function (d) {
+                return d[chartSetupJson.xAxisKey]; //take note again of the x-axis name
+            }));
+
+            //draw axes
+            //svg.append("g").attr("class", "axis").attr("transform", "translate(0," + height + ")").call(xAxis); (no x-axis)
+            svg.append("g").attr("class", "y axis").call(yAxis).attr("transform", "translate(" + (margin.left) + "," + (height / 2));
+            
+            svg.append("text")
+            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+            .attr("transform", "translate(" + (-0.75 * margin.left) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+            .style("font-family", "Helvetica").style("font-size",16).style("font-weight","bold")
+            .text(chartSetupJson.yAxisText);
+
+            var startx = 0;
+            var bargauge = svg.selectAll("." + chartSetupJson.xAxisKey) //where is this class developed
+                .data(jsondata)
+                .enter()
+                .append("g")
+                .attr("class", chartSetupJson.xAxisKey)
+                .attr("transform", function (d) {
+                    startx = x(d[chartSetupJson.xAxisKey]);
+                    return "translate(" + x(d[chartSetupJson.xAxisKey]) + ",0)"; //again take note of the x axis call
+            });
+
+            bargauge.selectAll("rect").data(function (d) {
+                return d.rates;
+            }).enter().append("rect").attr("width", x.rangeBand())
+            .attr("y", function (d) {
+                return height;
+            })
+            .attr("x", function (d) {
+                    return -margin.right;
+            }).attr("height", function (d) {
+                return 0;
+            }).style("fill", function (d) {
+                return color(d.name);
+            }).style("opacity", function (d) { return 0; })
+            .transition()
+                .attr("y", function (d) {
+                    return y(d.y1);
+                }).attr("height", function (d) {
+                    return y(d.y0) - y(d.y1);
+                }).style("opacity", function (d) { return 1; })
+                .duration(1000)
+                .delay(50);
+
+            //add the metadata, if any (which is the circles and the lines
+            if (chartSetupJson.metaData.length > 0)
+            {
+                var jsoncircles = [];
+                //get circles
+                var allcircles = chartSetupJson.metaData[0].items.filter(function (val) { return val.type == "circle"; })
+                for (var i = 0; i < allcircles.length; i++) {
+                    var cirobj = {
+                        "x_axis": width / 2 - margin.right,
+                        "y_axis": y(allcircles[i].value),
+                        "radius": 10,
+                        "color": allcircles[i].color
+                    }
+                    jsoncircles.push(cirobj);
+                }
+                var circles = svg.selectAll("circle")
+                  .data(jsoncircles)
+                  .enter()
+                  .append("circle");
+
+                var circleAttributes = circles
+                  .attr("cx", function (d) { return d.x_axis; })
+                  .attr("cy", function (d) { return height; })
+                  .attr("r", function (d) { return d.radius; })
+                  .style("fill", function (d) { return d.color; })
+                  .style("opacity", 0.0)
+                  .transition()
+                  .attr("cy", function (d) { return d.y_axis; })
+                  .style("opacity",0.9)
+                  .ease("elastic")
+                  .duration(1500)
+                  .delay(750);
+
+                var jsonlines = [];
+                var alllines = chartSetupJson.metaData[0].items.filter(function (val) { return val.type == "line"; })
+                for(var l = 0; l<alllines.length;l++)
+                {
+                    var lineob = {
+                        "x1": startx,
+                        "x2": startx+x.rangeBand(),
+                        "y1": y(alllines[l].value),
+                        "y2": y(alllines[l].value),
+                        "stroke": alllines[l].color,
+                        "stroke_width": 2
+                    }
+                    jsonlines.push(lineob);
+                }
+                var lines = svg.selectAll("lines")
+                    .data(jsonlines)
+                    .enter()
+                    .append("line");
+
+                var lineAttr = lines
+                  .attr("x1", function (d) { return d.x1 - margin.right; })
+                  .attr("x2", function (d) { 0; })
+                  .attr("y1", function (d) { return d.y1; })
+                  .attr("y2", function (d) { return d.y2; })
+                  .attr("stroke", function (d) { return d.stroke; })
+                  .attr("stroke-width", function (d) { return d.stroke_width*1.15; })
+                  .attr("opacity", 0)
+                  .transition()
+                  .attr("x2", function (d) { return d.x2 - margin.right; })
+                  .style("opacity", 0.9)
+                  .ease("linear")
+                  .duration(1500)
+                  .delay(1000);
+            }
+        },
+        loadFancyDonutNew:function(csvfinal, divname) {
+        var total = 0;
+        for (var i = 0; i < csvfinal.length; i++) {
+            total += (csvfinal[i][1]);
+        }
+        var title = total.toFixed(2) + "<br/>HOURS";
+    
+        $(divname).highcharts({
+            chart: {
+                spacingBottom: 0,
+                spacingTop: 0,
+                spacingLeft: 0,
+                spacingRight: 0,
+                marginBottom: 0,
+                type: 'pie',
+                events: {
+                    load: function (e) {
+                        if (this.title) { this.title.destroy(); }
+                        var r = this.renderer, x = this.series[0].center[0] + this.plotLeft, y = this.series[0].center[1] + this.plotTop;
+                        this.title = r.text(title, 0, 0).css({ color: '#000', fontSize: '30px' }).hide().add();
+                        var bbox = this.title.getBBox();
+                        this.title.attr({ x: x - (bbox.width / 2), y: y }).show();
+                    },
+                    redraw: function (e) {
+                        if (this.title) { this.title.destroy(); }
+                        var r = this.renderer, x = this.series[0].center[0] + this.plotLeft, y = this.series[0].center[1] + this.plotTop;
+                        this.title = r.text(title, 0, 0).css({ color: '#000', fontSize: '30px' }).hide().add();
+                        var bbox = this.title.getBBox();
+                        this.title.attr({ x: x - (bbox.width / 2), y: y }).show();
+                    }
+                }
+            },
+            title: {
+                text: null,
+                //align: 'center',
+                verticalAlign: 'middle',
+                floating: true,
+                style: {fontSize: "30px"}
+            },
+           
+            plotOptions: {
+                pie: {
+                    shadow: false,
+                    dataLabels: { enabled: false },
+                    borderWidth: 0
+                }
+            },
+            tooltip: {
+                backgroundColor: "black",
+                borderColor: "black",
+                shadow: false,
+                borderRadius: "0",
+                style: {
+                    "color": "white",
+                    "fontSize": "14px"
+                },
+                formatter: function() { return '<b>'+ this.point.name +'</b>: '+ this.y; }
+            },
+            colors: ["#02738B", "#0092B1", "#00A4C7", "#4CBFD7", "#7CE1F6", "#D4FDD2", "#AAEFA6", "#8AE385", "#69D163", "#36B62F", "#1F9918"],
+            series: [{ data: csvfinal, size: '90%', innerSize: '70%' }],
+            exporting: {enabled: false},
+            credits: {enabled: false}
+        });
+        },
+        loadGenericDonut: function(divname){
+            var width = parseInt(d3.select(divname).style("width"), 10),
+                height = parseInt(d3.select(divname).style("height"), 10),
+                radius = Math.min(width, height) / 2;
+
+            var color = d3.scale.ordinal()
+                .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+            var arc = d3.svg.arc()
+                .outerRadius(radius - 10)
+                .innerRadius(radius - 70);
+
+            var pie = d3.layout.pie()
+                .sort(null)
+                .value(function (d) { return d.population; });
+
+            var svg = d3.select(divname).append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            d3.csv("donut-data.csv", type, function (error, data) {
+                if (error) throw error;
+
+                var g = svg.selectAll(".arc")
+                    .data(pie(data))
+                    .enter().append("g")
+                    .attr("class", "arc");
+
+                g.append("path")
+                    .attr("d", arc)
+                    .style("fill", function (d) { return color(d.data.age); });
+
+                g.append("text")
+                    .attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; })
+                    .attr("dy", ".35em")
+                    .text(function (d) { return d.data.age; });
+            });
+
+            function type(d) {
+                d.population = +d.population;
+                return d;
+            }
+        },
+        add:function(a,b)
+        {
+            return a + b;
+        },
+        processOrdinalColorRange: function (colorArray,domainLength) {
+            if(colorArray.length === 2)
+            {
+                var lincol = d3.scale.linear()
+                .domain([0, 1])
+                .range(colorArray);
+                console.log(lincol(0.5));
+                var range = []; //this is the color range
+                for (var i = 0; i < domainLength; i++) {
+                    range.push(lincol(i / domainLength)); //this selects evenly spaced items in between
+                }
+                return range;
+            }
+            else
+            {
+                return colorArray;
+            }
+        }
+    }
+
+    
+</script>

@@ -1,0 +1,249 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>"D3 Chart Builders"</title>
+    <script type="text/javascript" language="javascript" src="d3.v4.js"></script>
+    <script type="text/javascript" language="javascript" src="EMD3.js"></script>
+    <script type="text/javascript" language="javascript" src="jquery-2.2.4.js"></script>
+    <script type="text/javascript" language="javascript" src="bootstrap.js"></script>
+    <script type="text/javascript" language="javascript" src="jquery-ui-1.12.js"></script>
+    <link rel="stylesheet" href="./Styles/jquery-ui.css" type="text/css" media="all" />
+    <link href='./Styles/bootstrap.css' rel='stylesheet' />
+    <link href='./Styles/bootstrap-theme.css' rel='stylesheet' />
+
+    <style>
+
+        a, button, code, div, img, input, label, li, p, pre, select, span, svg, table, td, textarea, th, ul {
+            -webkit-border-radius: 0!important;
+            -moz-border-radius: 0!important;
+            border-radius: 0!important;
+        }
+
+        ul, menu, dir {
+            display: block;
+            list-style-type: disc;
+            -webkit-margin-before: 1em;
+            -webkit-margin-after: 1em;
+            -webkit-margin-start: 0px;
+            -webkit-margin-end: 0px;
+            -webkit-padding-start: 40px;
+        }
+
+        .page-container {
+            margin:0;
+            padding:0;
+            margin-top:50px;
+            display:block;
+        }
+        .sideBarWrapper{
+            /*position: relative;
+            float:left;
+            min-height: 100%;*/
+            position:fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            margin:0;
+            padding:0;
+            margin-top:50px;
+        }
+        #navBar {
+            background-color: #a8a599;
+            max-height: none!important;
+            display:block!important;
+            height:auto!important;
+            overflow:visible!important;
+            width:50px;
+            
+        }
+        .sideBar
+        {
+            width:45px;
+            list-style:none;
+            margin:0;
+            padding:0;
+        }
+
+        .navElement {
+            width:50px;
+            height:50px;
+            border:none;
+            display:block;
+            text-align: -webkit-match-parent;
+        }
+        #content {
+            background: lightgray;
+            position: relative;
+            min-height: 1000px;
+            position:fixed;
+            left: 50px;
+            top: 50px;
+            bottom: 0;
+            width: 100%;
+            margin:0;
+        } 
+        
+        .lineGraph-lg
+        {
+            background-color:azure;
+            width:100%;
+            height:800px; /*need media queries for this*/
+            float:left;
+        } 
+
+        .line {
+          fill: none;
+          stroke: steelblue;
+          stroke-width: 1.5px;
+        }
+
+        .newline {
+          fill: none;
+          stroke-width: 1.5px;
+          stroke-opacity:0.75;
+        }
+
+        .axis path,
+        .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
+
+        .axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+        .y.axis line {
+	        stroke: #ccc;
+        }
+        .y.axis path {
+	        display: none;
+        }
+
+        .flare-section {
+            box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+    <div style="width:100%;height:50px;background-color:black">Header</div>
+    <div class="container">
+        <div class="row">
+            <div class="sideBarWrapper">
+                <div id="navbar">
+                    <ul class="sideBar">
+                        <li class="navElement"></li>
+                        <li class="navElement"></li>
+                    </ul>
+                    <!--<div class="schedule-row" id="mon-row">
+                <div class="schedule-day col-xs-5">
+                    <p><span class="day"></span></p>
+                </div>
+            </div>-->
+                </div>
+            </div>
+
+
+            <div id="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div id="chartDiv" class="lineGraph-lg" style="background-color:lightslategray"></div>
+                    </div>
+                    <div class="row">
+                        <div id="chart_controls" style="height:50px;background-color:white">
+                            <div id="sliderContainer" style="width:300px">
+                                <div id="slider-range" style="width: 80%; margin-left:10%; margin-right:10%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        var lineData = [] //added to the library specifically for line smoothing.
+
+        var a = 1;
+        var emd = new EMD3();
+        var categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var values = [2, 2, 2, 20, 25, 29, 21, 12, 20, 12, 2, 2];
+        //emd.MakeSimpleHorBarChart(categories, values, "Some text", "aquamarine", "#chartDiv");
+        var data = [
+       {
+           "x-axis": "",
+           "High": 40,
+           "Medium": 40,
+           "Low": 40,
+       }
+         //{
+         //    "x-axis": "",
+         //    "RTU": 2,
+         //    "Interior Lights": 30,
+         //    "Exterior Lights": 271,
+         //    "Thermostats": 125,
+         //}
+        ];
+        var chartSetup = {
+            xAxisKey:"x-axis",
+            colors:["#02738B","#0092B1","#00A4C7"],
+            yaxisTickFormat:d3.format(".2f"),
+            percentageScale:false,
+            yAxisText:"ekWh/sf/yr",
+            metaData:[
+        {
+            category:"EUI",
+            units: "ekWh/sf/yr",
+        axisDomain:[0,120],
+        itemLegend:true,
+        "items":[{
+            name:"BranchEUI",
+            value:60,
+            color: "#222222",
+            type:"line"
+        },
+        {
+            name:"TargetEUI",
+            value:50,
+            color: "#24D936",
+            type:"circle"
+        },
+        {
+            name:"PortfolioEUI",
+            value:100,
+            color: "#FF932F",
+            type:"circle"
+        }]
+    },
+    ]
+    }
+        emd.makeSunburstChart("#chartDiv"); //alternatively allow to pass in data vs. load external data vs. ajax etc.
+        
+    });
+
+    $("#slider").on("change", function () {
+        console.log(this.value)
+        //update();
+        //$("#range").html($("#slider").val());
+        //clearInterval(timer);
+        //$("button").html("Play");
+    });
+
+    function add(a, b) {
+        return a + b;
+    }
+
+
+
+    
+</script>
