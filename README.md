@@ -1,6 +1,4 @@
 # jmz527em.github.io
 EMD3 Library
 
-
-
-# TEST TEST TEST
+This is a D3.js playground 
